@@ -1,0 +1,73 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# the dataset
+file_path = '/Users/vasilisaermolaeva/Downloads/StudentPerformanceFactors.csv'
+data = pd.read_csv(file_path)
+
+# handling missing values by puting the most frequent value for categorical columns
+data['Teacher_Quality'].fillna(data['Teacher_Quality'].mode()[0], inplace=True)
+data['Parental_Education_Level'].fillna(data['Parental_Education_Level'].mode()[0], inplace=True)
+data['Distance_from_Home'].fillna(data['Distance_from_Home'].mode()[0], inplace=True)
+
+# any missing data after filling
+print("Missing data:\n", data.isnull().sum())
+
+# coding categorical variables for correlation analysis
+categorical_columns = ['Parental_Involvement', 'Access_to_Resources', 'Extracurricular_Activities', 
+                       'Motivation_Level', 'Internet_Access', 'Family_Income', 'Teacher_Quality', 
+                       'School_Type', 'Peer_Influence', 'Learning_Disabilities', 
+                       'Parental_Education_Level', 'Distance_from_Home', 'Gender']
+
+# converting categorical variables to numerical values using one-hot encoding
+data_encoded = pd.get_dummies(data, columns=categorical_columns, drop_first=True)
+
+# correlation matrix
+correlation_matrix = data_encoded.corr()
+
+# correlation with Exam_Score
+correlation_with_exam_score = correlation_matrix['Exam_Score'].sort_values(ascending=False)
+print("Correlation with Exam Score:\n", correlation_with_exam_score)
+
+# visualizations
+
+# hours studied vs exam score
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=data, x='Hours_Studied', y='Exam_Score')
+plt.title('Hours Studied vs Exam Score')
+plt.xlabel('Hours Studied')
+plt.ylabel('Exam Score')
+plt.show()
+
+# attendance vs exam score
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=data, x='Attendance', y='Exam_Score')
+plt.title('Attendance vs Exam Score')
+plt.xlabel('Attendance (%)')
+plt.ylabel('Exam Score')
+plt.show()
+
+# previous scores vs exam score
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=data, x='Previous_Scores', y='Exam_Score')
+plt.title('Previous Scores vs Exam Score')
+plt.xlabel('Previous Scores')
+plt.ylabel('Exam Score')
+plt.show()
+
+# family income vs exam score
+plt.figure(figsize=(8, 6))
+sns.boxplot(data=data, x='Family_Income', y='Exam_Score')
+plt.title('Family Income vs Exam Score')
+plt.xlabel('Family Income Level')
+plt.ylabel('Exam Score')
+plt.show()
+
+# teacher quality vs exam score 
+plt.figure(figsize=(8, 6))
+sns.boxplot(data=data, x='Teacher_Quality', y='Exam_Score')
+plt.title('Teacher Quality vs Exam Score')
+plt.xlabel('Teacher Quality')
+plt.ylabel('Exam Score')
+plt.show()
